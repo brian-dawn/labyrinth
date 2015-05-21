@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/brian-dawn/labyrinth.svg?branch=master)](https://travis-ci.org/brian-dawn/labyrinth)
+
 # labyrinth
 
 A Clojure library designed to ... well, that part is up to you.
