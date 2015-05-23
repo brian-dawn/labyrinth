@@ -2,35 +2,41 @@
   (:require [clojure.test :refer :all]
             [labyrinth.core :refer :all]))
 
+;; Ensure the tests also pass on a Windows system.
+
+(def abs-path     (str root "foo" seperator "bar"))
+(def abs-bar-path (str root "bar"))
+(def rel-path     (str "foo" seperator "bar"))
+
 (deftest path-tests
-  (testing "Path creation on UNIX"
-    (is (= "/foo/bar" (str (path "/foo/bar"))))
-    (is (= "/foo/bar" (str (path "/foo/bar/"))))
-    (is (= "/foo/bar" (str (path "/foo//bar"))))
+  (testing "path"
+    (is (= abs-path (str (path (str root "foo/bar")))))
+    (is (= abs-path (str (path (str root "foo/bar/")))))
+    (is (= abs-path (str (path (str root "foo//bar")))))
 
-    (is (= "/foo/bar" (str (path "/foo"  "bar"))))
-    (is (= "/foo/bar" (str (path "/foo"  "bar"))))
-    (is (= "/foo/bar" (str (path "/foo/" "bar/"))))
+    (is (= abs-path (str (path (str root "foo")  "bar"))))
+    (is (= abs-path (str (path (str root "foo")  "bar"))))
+    (is (= abs-path (str (path (str root "foo/") "bar/"))))
 
-    (is (= "foo/bar" (str (path "foo"  "bar"))))
-    (is (= "foo/bar" (str (path "foo/" "bar"))))
-    (is (= "/bar"    (str (path "foo"  "/bar")))))
+    (is (= rel-path     (str (path "foo"  "bar"))))
+    (is (= rel-path     (str (path "foo/" "bar"))))
+    (is (= abs-bar-path (str (path "foo"  (str root "bar"))))))
 
-  (testing "Path joining"
-    (is (= "foo/bar"  (str (join (path "foo")  (path "bar")))))
-    (is (= "foo/bar"  (str (join (path "foo/") (path "bar")))))
-    (is (= "/bar"     (str (join (path "foo/") (path "/bar")))))
-    (is (= "/foo/bar" (str (join (path "/foo") (path "bar"))))))
+  (testing "join"
+    (is (= rel-path     (str (join (path "foo")            (path "bar")))))
+    (is (= rel-path     (str (join (path "foo/")           (path "bar")))))
+    (is (= abs-bar-path (str (join (path "foo/")           (path (str root "bar"))))))
+    (is (= abs-path     (str (join (path (str root "foo")) (path "bar"))))))
 
   (testing "remove-root"
-    (is (= "foo" (str (remove-root (path "/foo"))))))
+    (is (= "foo" (str (remove-root (path (str root "foo")))))))
 
-  (testing "path-child"
-    (is (= "bar" (str (path-child (path "foo/bar")))))
-    (is (= "foo" (str (path-child (path "foo"))))))
+  (testing "end"
+    (is (= "bar" (str (end (path "foo/bar")))))
+    (is (= "foo" (str (end (path "foo"))))))
 
-  (testing "path-parents"
-    (is (= "foo/bar" (str (path-parents (path "foo/bar/baz"))))))
+  (testing "trail"
+    (is (= rel-path (str (trail (path "foo/bar/baz"))))))
 
 
   )
