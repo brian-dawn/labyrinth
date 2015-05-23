@@ -2,6 +2,25 @@
 
 ;; Provide a sandbox and file-system functionality.
 
+(defn join
+  "Join Path instances together."
+  [& paths]
+  (let [resolve (fn [a b] (.resolve a b))]
+    (reduce resolve paths)))
+
+(defn path
+  "Create an instance of Path from a string.
+     If multiple strings are passed in attempt to create a joined path."
+  [& strings]
+  (let [creator (fn [s]  (.toPath (java.io.File. s)))]
+    (reduce join (map creator strings))))
+
+(defn pwd
+  "Return the absolute path to the current working directory
+   as a Path instance"
+  []
+  (path (.getAbsolutePath (new java.io.File "."))))
+
 (def empty-attribute-array (make-array java.nio.file.attribute.FileAttribute 0))
 (def root (.getRoot (pwd)))
 (def seperator (java.io.File/separator))
@@ -23,27 +42,6 @@
   (let [bytes (java.nio.file.Files/readAllBytes path)
         hash (.digest (java.security.MessageDigest/getInstance "MD5") bytes)]
     (javax.xml.bind.DatatypeConverter/printHexBinary hash)))
-
-(md5 (path "/Users/brian.dawn/test.hs"))
-
-(defn join
-  "Join Path instances together."
-  [& paths]
-  (let [resolve (fn [a b] (.resolve a b))]
-    (reduce resolve paths)))
-
-(defn path
-  "Create an instance of Path from a string.
-     If multiple strings are passed in attempt to create a joined path."
-  [& strings]
-  (let [creator (fn [s]  (.toPath (java.io.File. s)))]
-    (reduce join (map creator strings))))
-
-(defn pwd
-  "Return the absolute path to the current working directory
-   as a Path instance"
-  []
-  (path (.getAbsolutePath (new java.io.File "."))))
 
 (defn remove-root
   "Remove a root component from a Path instance returning a new Path."
